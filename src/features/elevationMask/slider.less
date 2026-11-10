@@ -1,0 +1,95 @@
+// The panel's slider look (RangeSlider, OffsetSlider): a thin track, a white fill, white thumbs. Desktop 14 px thumbs
+// in a row of --height (default 24 px); touch (&--touch) 24 px thumbs in 30 px. Call it in the slider's root rule.
+.slider() {
+    --thumb: 14px;
+    position: relative;
+    height: var(--height, 24px);
+
+    &--touch {
+        --thumb: 24px;
+        height: 30px;
+    }
+
+    &.disabled {
+        opacity: 0.5;
+    }
+
+    .track {
+        position: absolute;
+        left: calc(var(--thumb) / 2);
+        right: calc(var(--thumb) / 2);
+        top: 50%;
+        height: 4px;
+        transform: translateY(-50%);
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        border-radius: 2px;
+        background: #fff;
+    }
+
+    // As tall as the thumb and centred, so the thumb sits on the track in every browser.
+    input[type='range'] {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        height: var(--thumb);
+        margin: 0;
+        padding: 0;
+        transform: translateY(-50%);
+        background: transparent;
+        -webkit-appearance: none;
+        appearance: none;
+        outline: none;
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+        height: 100%;
+        background: transparent;
+    }
+    input[type='range']::-moz-range-track {
+        height: 100%;
+        background: transparent;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+        width: var(--thumb);
+        height: var(--thumb);
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    input[type='range']::-moz-range-thumb {
+        width: var(--thumb);
+        height: var(--thumb);
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+    }
+
+    input[type='range']:focus-visible::-webkit-slider-thumb {
+        outline: 2px solid #5ec8f2;
+    }
+    input[type='range']:focus-visible::-moz-range-thumb {
+        outline: 2px solid #5ec8f2;
+    }
+
+    &.disabled input[type='range']::-webkit-slider-thumb {
+        cursor: default;
+    }
+    &.disabled input[type='range']::-moz-range-thumb {
+        cursor: default;
+    }
+}

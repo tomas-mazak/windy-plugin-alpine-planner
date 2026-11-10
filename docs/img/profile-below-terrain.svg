@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" width="720" height="340" font-family="Helvetica, Arial, sans-serif" font-size="12">
+  <rect width="720" height="340" fill="#ffffff"/>
+  <text x="20" y="24" font-size="15" font-weight="bold" fill="#222">Below the model terrain: Zermatt, Mon 26 Oct 00 UTC, ECMWF</text>
+  <!-- axes: x = 80 + (T + 30) * 12  (−30..+10 °C);  y = 290 − h * 0.06  (0..4000 m) -->
+  <line x1="80" y1="290" x2="560" y2="290" stroke="#444"/>
+  <line x1="80" y1="290" x2="80" y2="44" stroke="#444"/>
+  <text x="290" y="320" fill="#444">temperature (°C)</text>
+  <text x="80" y="305" text-anchor="middle" fill="#444">−30</text>
+  <text x="200" y="305" text-anchor="middle" fill="#444">−20</text>
+  <text x="320" y="305" text-anchor="middle" fill="#444">−10</text>
+  <text x="440" y="305" text-anchor="middle" fill="#444">0</text>
+  <text x="560" y="305" text-anchor="middle" fill="#444">+10</text>
+  <text x="72" y="294" text-anchor="end" fill="#444">0 m</text>
+  <text x="72" y="174" text-anchor="end" fill="#444">2000 m</text>
+  <text x="72" y="54" text-anchor="end" fill="#444">4000 m</text>
+  <line x1="440" y1="290" x2="440" y2="44" stroke="#1f6fd1" stroke-dasharray="3,4"/>
+  <!-- model terrain 2931 m -->
+  <rect x="80" y="114" width="480" height="176" fill="#7a5230" fill-opacity="0.07"/>
+  <line x1="80" y1="114" x2="560" y2="114" stroke="#7a5230" stroke-width="1.5"/>
+  <text x="565" y="118" fill="#7a5230">model terrain 2931 m</text>
+  <!-- real valley floor 1597 m -->
+  <line x1="470" y1="194" x2="560" y2="194" stroke="#7a5230" stroke-width="3"/>
+  <text x="565" y="198" fill="#7a5230">Zermatt 1597 m</text>
+  <!-- free-air profile above: 600 hPa side clipped at 4000 m, 700 hPa (3073 m, −4.5) -->
+  <polyline points="336.6,50 385.5,105.6" fill="none" stroke="#222" stroke-width="2.5"/>
+  <circle cx="385.5" cy="105.6" r="4.5" fill="#222"/>
+  <text x="392" y="98" fill="#222">700 hPa: 3073 m, −4.5 °C (lowest level above)</text>
+  <!-- free air continued down at 6.5 K/km through L0 -->
+  <line x1="385.5" y1="105.6" x2="530" y2="227" stroke="#1f6fd1" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <!-- ECMWF below-ground levels on that line: 800 hPa 2008 m +2.9, 850 hPa 1516 m +6.0 -->
+  <circle cx="474.6" cy="169.5" r="4" fill="#ffffff" stroke="#1f6fd1" stroke-width="2"/>
+  <circle cx="512.5" cy="199" r="4" fill="#ffffff" stroke="#1f6fd1" stroke-width="2"/>
+  <text x="520" y="240" fill="#1f6fd1">free air at 6.5 K/km; ECMWF's</text>
+  <text x="520" y="254" fill="#1f6fd1">below-ground levels (○) lie on it</text>
+  <!-- T2m at model terrain -->
+  <circle cx="274" cy="114" r="5" fill="#b3261e"/>
+  <text x="268" y="108" text-anchor="end" fill="#b3261e">T2m −13.8 °C (cold surface)</text>
+  <!-- new rule: from T2m, fading into the free-air line over 300 m (to 2631 m), then along it -->
+  <polyline points="274,114 420,132.1 500.6,194.2" fill="none" stroke="#2e9b4f" stroke-width="3"/>
+  <circle cx="500.6" cy="194.2" r="5" fill="#2e9b4f"/>
+  <text x="276" y="150" fill="#2e9b4f">new rule: the surface</text>
+  <text x="276" y="164" fill="#2e9b4f">offset fades out over 300 m</text>
+  <text x="404" y="214" text-anchor="end" fill="#2e9b4f">Zermatt: +5.1 °C (sounding: +5 °C)</text>
+  <!-- isotherm crossing at 2375 m -->
+  <circle cx="440" cy="147.5" r="4" fill="#1f6fd1"/>
+  <text x="446" y="142" fill="#1f6fd1">0 °C at ≈ 2385 m</text>
+  <!-- old rule: near-surface Γ clamped to −8 K/km -->
+  <line x1="274" y1="114" x2="137.6" y2="194.2" stroke="#888" stroke-width="2" stroke-dasharray="4,4"/>
+  <circle cx="137.6" cy="194.2" r="4" fill="#888"/>
+  <text x="96" y="214" fill="#666">old rule ①: −25.2 °C</text>
+</svg>

@@ -1,0 +1,80 @@
+# Every night, the end-to-end tests against production windy.com. The plugin patches Windy's client internals at
+# runtime (docs/windy-integration.md); this run catches a Windy release that breaks them.
+name: Nightly
+
+on:
+  schedule:
+    - cron: '17 3 * * *' # 03:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: End-to-end tests against windy.com
+    if: github.repository == 'tomas-mazak/windy-plugin-alpine-planner'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Playwright browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+
+      - name: Install Chromium and its system dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        env:
+          WINDY_URL: https://www.windy.com
+          WINDY_FREE_USER: ${{ secrets.WINDY_FREE_USER }}
+          WINDY_FREE_PASSWORD: ${{ secrets.WINDY_FREE_PASSWORD }}
+          WINDY_PREMIUM_USER: ${{ secrets.WINDY_PREMIUM_USER }}
+          WINDY_PREMIUM_PASSWORD: ${{ secrets.WINDY_PREMIUM_PASSWORD }}
+        run: |
+          npm run test:e2e:check-credentials
+          npx playwright test
+
+      - name: Scan the test artifacts for credentials
+        id: scan
+        if: failure()
+        env:
+          WINDY_FREE_USER: ${{ secrets.WINDY_FREE_USER }}
+          WINDY_FREE_PASSWORD: ${{ secrets.WINDY_FREE_PASSWORD }}
+          WINDY_PREMIUM_USER: ${{ secrets.WINDY_PREMIUM_USER }}
+          WINDY_PREMIUM_PASSWORD: ${{ secrets.WINDY_PREMIUM_PASSWORD }}
+        run: npm run test:e2e:scan-report
+
+      - name: Upload the test artifacts
+        if: failure() && steps.scan.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          include-hidden-files: false # never e2e/.auth or Playwright's hidden working files
+          if-no-files-found: ignore
+          retention-days: 7

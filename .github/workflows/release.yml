@@ -1,0 +1,149 @@
+# On main: the CI checks and the end-to-end tests, then publishes through the `release` environment. Configure its
+# required reviewers in GitHub settings to enforce approval (README, maintainer setup). The workflow publishes the
+# version in src/pluginConfig.ts to Windy's plugin gallery and tags it v<version>, unless that tag already exists.
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false # never cancel a publish in progress
+
+jobs:
+  test:
+    name: Checks and end-to-end tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Playwright browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
+
+      - name: Install Chromium and its system dependencies
+        run: npx playwright install --with-deps chromium
+
+      # The secrets are passed to this step and the scan only, not to npm ci or the build.
+      - name: End-to-end tests
+        env:
+          WINDY_URL: ${{ vars.WINDY_URL || 'https://www.windy.com' }}
+          WINDY_FREE_USER: ${{ secrets.WINDY_FREE_USER }}
+          WINDY_FREE_PASSWORD: ${{ secrets.WINDY_FREE_PASSWORD }}
+          WINDY_PREMIUM_USER: ${{ secrets.WINDY_PREMIUM_USER }}
+          WINDY_PREMIUM_PASSWORD: ${{ secrets.WINDY_PREMIUM_PASSWORD }}
+        run: |
+          npm run test:e2e:check-credentials
+          npx playwright test
+
+      # On failure: the report and test results hold no traces, videos or page screenshots (playwright.config.ts),
+      # only screenshots of the plugin box and Windy's picker. They're uploaded only if the scan finds no credential.
+      - name: Scan the test artifacts for credentials
+        id: scan
+        if: failure()
+        env:
+          WINDY_FREE_USER: ${{ secrets.WINDY_FREE_USER }}
+          WINDY_FREE_PASSWORD: ${{ secrets.WINDY_FREE_PASSWORD }}
+          WINDY_PREMIUM_USER: ${{ secrets.WINDY_PREMIUM_USER }}
+          WINDY_PREMIUM_PASSWORD: ${{ secrets.WINDY_PREMIUM_PASSWORD }}
+        run: npm run test:e2e:scan-report
+
+      - name: Upload the test artifacts
+        if: failure() && steps.scan.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          include-hidden-files: false # never e2e/.auth or Playwright's hidden working files
+          if-no-files-found: ignore
+          retention-days: 7
+
+  publish:
+    name: Publish to Windy's plugin gallery
+    needs: test
+    if: github.repository == 'tomas-mazak/windy-plugin-alpine-planner' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: release
+    permissions:
+      contents: write # the v<version> tag
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read the version and check its tag
+        id: version
+        run: |
+          version="$(sed -n "s/^ *version: '\([0-9][0-9.]*\)',$/\1/p" src/pluginConfig.ts)"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error file=src/pluginConfig.ts::No version found in src/pluginConfig.ts"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          status=0
+          git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null || status=$?
+          case "$status" in
+            0)
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              echo "::notice title=Not published::Tag v$version already exists, so version $version is already published. Raise the version in package.json and src/pluginConfig.ts to publish."
+              ;;
+            2) echo "exists=false" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "::error::Couldn't list the repository's tags (git ls-remote exit $status)"
+              exit 1
+              ;;
+          esac
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.version.outputs.exists == 'false'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - if: steps.version.outputs.exists == 'false'
+        run: npm ci
+
+      # publish.sh builds, packages dist/ with the commit, and uploads it. It never prints the key.
+      - name: Publish v${{ steps.version.outputs.version }}
+        if: steps.version.outputs.exists == 'false'
+        env:
+          WINDY_API_KEY: ${{ secrets.WINDY_API_KEY }}
+          WINDY_PLUGIN_OWNER: ${{ secrets.WINDY_PLUGIN_OWNER }}
+          WINDY_PLUGIN_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}
+        run: ./publish.sh --yes
+
+      - name: Tag v${{ steps.version.outputs.version }}
+        if: steps.version.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/v$VERSION" -f sha="$GITHUB_SHA" > /dev/null

@@ -1,0 +1,19 @@
+{
+    // The end-to-end tests (Playwright, in Node), apart from the plugin's browser project (../tsconfig.json).
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "lib": ["es2022", "DOM"], // page.evaluate callbacks run in the page
+        "types": [], // no @types/node: the few Node APIs used are declared in node.d.ts
+        "strict": true,
+        "noUnusedLocals": true,
+        "noImplicitReturns": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "allowImportingTsExtensions": true, // scan-report.ts runs in Node directly (type stripping)
+        "noEmit": true
+    },
+    "include": ["**/*.ts", "../playwright.config.ts"],
+    "exclude": ["**/*.test.ts"] // Node unit tests, run by npm test
+}

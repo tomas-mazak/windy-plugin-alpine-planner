@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <rect width="720" height="300" fill="#ffffff"/>
+  <!-- sky above model surface: frozen everywhere in this example -->
+  <text x="20" y="28" font-size="15" font-weight="bold" fill="#222">Frozen to the ground: deg0 sits on the smoothed model terrain</text>
+  <!-- wrongly dimmed areas: real terrain below the model surface -->
+  <polygon points="222,176 260,177 300,185 340,184 380,181 380,200 340,235 300,240 260,210" fill="#e8504a" fill-opacity="0.35"/>
+  <polygon points="560,178 600,185 660,196 720,205 720,232 640,222 580,192" fill="#e8504a" fill-opacity="0.35"/>
+  <!-- real terrain -->
+  <polyline points="0,232 60,200 120,120 160,90 200,130 260,210 300,240 340,235 380,200 440,110 480,80 520,120 580,192 640,222 720,232" fill="none" stroke="#7a5230" stroke-width="3"/>
+  <!-- model terrain (smoothed) = deg0 -->
+  <polyline points="0,205 60,185 120,168 180,170 240,176 300,185 360,182 420,160 480,150 540,165 600,185 660,196 720,205" fill="none" stroke="#1f6fd1" stroke-width="3" stroke-dasharray="9,5"/>
+  <!-- labels -->
+  <line x1="470" y1="150" x2="520" y2="60" stroke="#1f6fd1"/>
+  <text x="380" y="52" fill="#1f6fd1">model terrain (~9 km grid) = deg0</text>
+  <line x1="160" y1="92" x2="120" y2="62" stroke="#7a5230"/>
+  <text x="40" y="58" fill="#7a5230">real terrain (90 m)</text>
+  <text x="235" y="268" fill="#b3261e">real terrain below the model surface:</text>
+  <text x="235" y="284" fill="#b3261e">dimmed; actual temperature unknown</text>
+  <!-- legend -->
+  <rect x="560" y="250" width="14" height="10" fill="#e8504a" fill-opacity="0.35"/>
+  <text x="580" y="260" fill="#222">wrongly dimmed</text>
+</svg>

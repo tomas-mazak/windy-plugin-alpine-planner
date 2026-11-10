@@ -1,0 +1,48 @@
+{
+    "name": "windy-plugin-alpine-planner",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Alpine planner, a Windy plugin: temperature minimum/maximum over a period and at real terrain height, and terrain masks by elevation or freezing level.",
+    "keywords": [
+        "windy",
+        "windy-plugin",
+        "weather",
+        "mountains",
+        "alpine",
+        "temperature",
+        "freezing-level",
+        "lapse-rate",
+        "maplibre",
+        "webgl"
+    ],
+    "homepage": "https://github.com/tomas-mazak/windy-plugin-alpine-planner#readme",
+    "bugs": {
+        "url": "https://github.com/tomas-mazak/windy-plugin-alpine-planner/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tomas-mazak/windy-plugin-alpine-planner.git"
+    },
+    "license": "MIT",
+    "author": "Tomas Mazak",
+    "main": "dist/plugin.min.js",
+    "type": "module",
+    "scripts": {
+        "build": "rm -rf dist && mkdir dist && SERVE=false rollup -c && cp package.json LICENSE dist/ && cp -R LICENSES dist/ && cp node_modules/svelte/LICENSE.md dist/LICENSES/svelte.txt",
+        "start": "rollup -w -c",
+        "lint": "eslint --ext .ts,.svelte src e2e playwright.config.ts",
+        "typecheck": "tsc --noEmit && tsc --noEmit -p e2e",
+        "test": "node --test 'src/**/*.test.ts' 'e2e/*.test.ts'",
+        "test:e2e": "npm run build && playwright test",
+        "test:e2e:headed": "npm run build && playwright test --headed",
+        "test:e2e:report": "playwright show-report",
+        "test:e2e:scan-report": "node e2e/scan-report.ts",
+        "test:e2e:check-credentials": "node e2e/check-credentials.ts"
+    },
+    "dependencies": {
+        "@windycom/plugin-devtools": "^3.0.3"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.65.0"
+    }
+}

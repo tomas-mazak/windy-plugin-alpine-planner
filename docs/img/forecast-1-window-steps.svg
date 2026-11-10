@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" width="720" height="230" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <rect width="720" height="230" fill="#ffffff"/>
+  <text x="20" y="26" font-size="15" font-weight="bold" fill="#222">Which forecast steps a window uses</text>
+  <!-- time axis: x = 60 + h*10 (h = hours from 00 UTC), 0..60 h -->
+  <line x1="60" y1="130" x2="680" y2="130" stroke="#444"/>
+  <!-- steps: hourly 0..12? use 3-hourly to 36 h, then 6-hourly -->
+  <g fill="#888">
+    <circle cx="60" cy="130" r="4"/><circle cx="90" cy="130" r="4"/><circle cx="120" cy="130" r="4"/>
+    <circle cx="150" cy="130" r="4"/><circle cx="180" cy="130" r="4"/><circle cx="210" cy="130" r="4"/>
+    <circle cx="240" cy="130" r="4"/><circle cx="270" cy="130" r="4"/><circle cx="300" cy="130" r="4"/>
+    <circle cx="330" cy="130" r="4"/><circle cx="360" cy="130" r="4"/><circle cx="390" cy="130" r="4"/>
+    <circle cx="420" cy="130" r="4"/><circle cx="480" cy="130" r="4"/><circle cx="540" cy="130" r="4"/>
+    <circle cx="600" cy="130" r="4"/><circle cx="660" cy="130" r="4"/>
+  </g>
+  <text x="60" y="152" text-anchor="middle" fill="#444">0 h</text>
+  <text x="300" y="152" text-anchor="middle" fill="#444">24 h</text>
+  <text x="540" y="152" text-anchor="middle" fill="#444">48 h</text>
+  <text x="250" y="172" fill="#444">3-hourly steps</text>
+  <text x="470" y="172" fill="#444">6-hourly steps</text>
+  <!-- window: start 10.5 h (x=165), end 10.5+33.5=44 h (x=500) -->
+  <rect x="165" y="104" width="335" height="52" fill="#1f6fd1" fill-opacity="0.10" stroke="#1f6fd1"/>
+  <text x="165" y="96" fill="#1f6fd1">start (timeline, may fall between steps)</text>
+  <text x="500" y="96" text-anchor="end" fill="#1f6fd1">end = start + range</text>
+  <!-- included steps highlighted: 12..42 h => x=180..480 -->
+  <g fill="#1f6fd1">
+    <circle cx="180" cy="130" r="5"/><circle cx="210" cy="130" r="5"/><circle cx="240" cy="130" r="5"/>
+    <circle cx="270" cy="130" r="5"/><circle cx="300" cy="130" r="5"/><circle cx="330" cy="130" r="5"/>
+    <circle cx="360" cy="130" r="5"/><circle cx="390" cy="130" r="5"/><circle cx="420" cy="130" r="5"/>
+  </g>
+  <!-- premium cut at 39 h (x=450): step 42 (x=480) dropped for free users -->
+  <line x1="450" y1="60" x2="450" y2="190" stroke="#b3261e" stroke-dasharray="5,4"/>
+  <text x="456" y="72" fill="#b3261e">premiumStart</text>
+  <circle cx="480" cy="130" r="6" fill="none" stroke="#b3261e" stroke-width="2"/>
+  <line x1="474" y1="124" x2="486" y2="136" stroke="#b3261e" stroke-width="2"/>
+  <text x="20" y="210" fill="#222">Blue: steps used (start ≤ step ≤ end). Crossed: dropped for free users (after premiumStart). No values are interpolated in time.</text>
+</svg>

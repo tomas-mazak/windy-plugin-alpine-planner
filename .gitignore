@@ -1,0 +1,24 @@
+# Dependencies and build output
+node_modules/
+dist/
+.rollup.cache/
+*.tsbuildinfo
+
+# Local configuration and secrets (copy .env.example to .env; never commit .env)
+.env
+.env.*
+!.env.example
+
+# End-to-end tests: saved logins and run artifacts
+e2e/.auth/
+test-results/
+playwright-report/
+
+# Editors, OS and scratch files
+.DS_Store
+.vscode/
+.idea/
+*.log
+nohup.out
+tmp/
+.tmp/

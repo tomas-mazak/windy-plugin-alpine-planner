@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" width="720" height="320" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <rect width="720" height="320" fill="#ffffff"/>
+  <text x="20" y="26" font-size="15" font-weight="bold" fill="#222">Lapse-rate correction: extrapolate the temperature below the model terrain</text>
+  <!-- axes: x = temperature (-10..+10 C -> 80..640), y = height (0..2000 m -> 280..60) -->
+  <line x1="80" y1="280" x2="640" y2="280" stroke="#444"/>
+  <line x1="80" y1="280" x2="80" y2="50" stroke="#444"/>
+  <text x="300" y="306" fill="#444">temperature (°C)</text>
+  <text x="74" y="296" text-anchor="middle" fill="#444">−10</text>
+  <text x="360" y="296" text-anchor="middle" fill="#444">0</text>
+  <text x="640" y="296" text-anchor="middle" fill="#444">+10</text>
+  <text x="70" y="284" text-anchor="end" fill="#444">0 m</text>
+  <text x="70" y="174" text-anchor="end" fill="#444">1000 m</text>
+  <text x="70" y="64" text-anchor="end" fill="#444">2000 m</text>
+  <!-- 0 C line -->
+  <line x1="360" y1="280" x2="360" y2="50" stroke="#1f6fd1" stroke-dasharray="4,4"/>
+  <text x="366" y="62" fill="#1f6fd1">0 °C</text>
+  <!-- model terrain at 1200 m: y = 280 - 1200*0.11 = 148 -->
+  <rect x="80" y="148" width="560" height="132" fill="#7a5230" fill-opacity="0.08"/>
+  <line x1="80" y1="148" x2="640" y2="148" stroke="#7a5230" stroke-width="2"/>
+  <text x="520" y="142" fill="#7a5230">model terrain 1200 m</text>
+  <text x="430" y="240" fill="#7a5230">below the model terrain:</text>
+  <text x="430" y="256" fill="#7a5230">no model data, only real valleys</text>
+  <!-- profile above terrain: T2m=-2 at 1200 (x=304,y=148), -5 at 1700 (x=220,y=93); x = 360 + T*28 -->
+  <polyline points="304,148 213,93" fill="none" stroke="#222" stroke-width="3"/>
+  <circle cx="304" cy="148" r="5" fill="#222"/>
+  <text x="140" y="140" fill="#222">T2m = −2 °C</text>
+  <circle cx="213" cy="93" r="5" fill="#222"/>
+  <text x="100" y="88" fill="#222">T at 1700 m = −5.3 °C</text>
+  <text x="262" y="112" fill="#222">6.5 K/km</text>
+  <!-- extrapolation below: T = -2 + 6.5*(1200-h)/1000 ; 0 C at 892 m (y=182); +1.8 C at 617 m (x=410,y=212) -->
+  <line x1="304" y1="148" x2="410" y2="212" stroke="#222" stroke-width="2.5" stroke-dasharray="7,5"/>
+  <!-- F line -->
+  <line x1="80" y1="182" x2="640" y2="182" stroke="#e8504a" stroke-width="2"/>
+  <text x="440" y="177" fill="#b3261e">F ≈ 890 m  ( = 1200 − 2 / 0.0065 )</text>
+  <!-- example points -->
+  <circle cx="338" cy="170" r="5" fill="#2e9b4f"/>
+  <text x="326" y="174" text-anchor="end" fill="#2e9b4f">real slope at 1000 m: frozen → clear</text>
+  <circle cx="410" cy="212" r="5" fill="#b3261e"/>
+  <text x="398" y="216" text-anchor="end" fill="#b3261e">valley floor at 620 m: above 0 °C → dimmed</text>
+</svg>
